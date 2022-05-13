@@ -36,13 +36,20 @@ class DBExtractor():
 
             self.add_item_source_column(df)
 
-            df.to_csv(targetFile,";","")
-            
+            df = self.clean_unused_columns(df)
+
+            df.to_csv(targetFile,';','',line_terminator='\r\n', quotechar='"',
+                      index=False,encoding='UTF-8', compression='gzip')
+
             # End of exercise
         except Exception as e:
             print("error extracting data from sqlserver"+e)
         finally:        
             if conn: conn.close()
+
+    def clean_unused_columns(self, df):
+        df = df.drop(columns=['VersionNbr', 'DeletedFlag'])
+        return df
 
     def add_item_source_column(self, df):
         df['ItemSource'] = ['Local' if (x[-2:] == '66' or x[-2:] == '99')
