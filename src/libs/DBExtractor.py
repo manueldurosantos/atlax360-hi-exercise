@@ -27,10 +27,13 @@ class DBExtractor():
                                 ";TrustServerCertificate=Yes")
             
             # Insert your exercise code here
-
             df = pd.read_sql("SELECT ItemId, ItemDocumentNbr, CustomerName, CreateDate, UpdateDate,"
                              "VersionNbr, DeletedFlag FROM Item JOIN Customer "
                              "ON Item.CustomerId = Customer.CustomerId;", conn)
+
+            df = self.clean_older_versions(df)
+            df = self.clean_inactive_items(df)
+
             df.to_csv(targetFile,";","")
             
             # End of exercise
@@ -39,3 +42,11 @@ class DBExtractor():
         finally:        
             if conn: conn.close()
 
+    def clean_inactive_items(self, df):
+        df = df[df.DeletedFlag != 1]
+        return df
+
+    def clean_older_versions(self, df):
+        df = df.sort_values(by=['ItemId', 'VersionNbr'])
+        df = df.drop_duplicates(subset="ItemId", keep='last')
+        return df
