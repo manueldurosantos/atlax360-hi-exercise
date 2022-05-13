@@ -1,0 +1,5 @@
+-- No estoy muy seguro de ello y no lo he probado,
+-- pero mi sugerencia es la siguiente:
+
+CREATE INDEX idx_items ON Item (ItemId, CustomerId);
+CREATE INDEX idx_customers ON Customer (CustomerId, CustomerName);
