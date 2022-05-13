@@ -18,7 +18,6 @@ class DBExtractor():
 
     def extract(self, targetFile: str):
         conn = None
-        
         try:
             conn = pyodbc.connect("DRIVER={ODBC Driver 18 for SQL Server}" +
                                 ";SERVER=" + self._HOST + 
@@ -28,12 +27,15 @@ class DBExtractor():
                                 ";TrustServerCertificate=Yes")
             
             # Insert your exercise code here
-            
-            # df = pd.read_sql(......, conn)
-            # df.to_csv(......)
+
+            df = pd.read_sql("SELECT ItemId, ItemDocumentNbr, CustomerName, CreateDate, UpdateDate,"
+                             "VersionNbr, DeletedFlag FROM Item JOIN Customer "
+                             "ON Item.CustomerId = Customer.CustomerId;", conn)
+            df.to_csv(targetFile,";","")
             
             # End of exercise
-        except:
-            print("error extracting data from sqlserver")
+        except Exception as e:
+            print("error extracting data from sqlserver"+e)
         finally:        
             if conn: conn.close()
+
