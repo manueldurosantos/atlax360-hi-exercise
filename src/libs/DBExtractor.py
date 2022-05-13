@@ -34,6 +34,8 @@ class DBExtractor():
             df = self.clean_older_versions(df)
             df = self.clean_inactive_items(df)
 
+            self.add_item_source_column(df)
+
             df.to_csv(targetFile,";","")
             
             # End of exercise
@@ -41,6 +43,10 @@ class DBExtractor():
             print("error extracting data from sqlserver"+e)
         finally:        
             if conn: conn.close()
+
+    def add_item_source_column(self, df):
+        df['ItemSource'] = ['Local' if (x[-2:] == '66' or x[-2:] == '99')
+                            else 'External' for x in df['CustomerName']]
 
     def clean_inactive_items(self, df):
         df = df[df.DeletedFlag != 1]
